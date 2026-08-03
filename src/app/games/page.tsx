@@ -8,6 +8,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import dynamic from 'next/dynamic';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguage } from '@/context/language-context';
 
 const GameFilters = dynamic(() => import('@/components/game-filters').then(mod => mod.GameFilters), {
   ssr: false,
@@ -21,6 +22,7 @@ function GamesPageContent() {
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [sortBy, setSortBy] = useState('total_rating_count desc');
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useLanguage();
   
   const [currentPage, setCurrentPage] = useState(1);
   const [gamesPerPage, setGamesPerPage] = useState(20);
@@ -150,8 +152,8 @@ function GamesPageContent() {
 
         {!isLoading && games.length === 0 && (
         <div className="text-center py-20">
-            <h2 className="text-2xl font-semibold mb-2">Aucun jeu trouvé</h2>
-            <p className="text-muted-foreground">Essayez d'ajuster votre recherche ou vos filtres.</p>
+            <h2 className="text-2xl font-semibold mb-2">{t('noGamesFound')}</h2>
+            <p className="text-muted-foreground">{t('tryAdjusting')}</p>
         </div>
         )}
     </main>
@@ -160,7 +162,7 @@ function GamesPageContent() {
         <div className="py-6 px-4 sm:px-6 md:px-8 border-t">
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Jeux par page:</span>
+            <span>{t('gamesPerPage')}</span>
             <Select value={String(gamesPerPage)} onValueChange={(value) => setGamesPerPage(Number(value))}>
                 <SelectTrigger className="w-[80px]">
                 <SelectValue />
@@ -184,7 +186,7 @@ function GamesPageContent() {
             </PaginationContent>
             </Pagination>
             <div className="text-sm text-muted-foreground">
-            Page {currentPage} sur {totalPages} ({totalGames} jeux)
+            {t('page')} {currentPage} {t('of')} {totalPages} ({totalGames} {t('gamesCount')})
             </div>
         </div>
         </div>

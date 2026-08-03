@@ -113,3 +113,18 @@ export type NewsArticle = {
     imageUrl: string;
     creator: string;
 };
+
+declare global {
+  namespace React {
+    interface IntrinsicElements {
+      'github-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement> & {
+        repo?: string;
+        'data-color-scheme'?: string;
+        'data-size'?: string;
+        'data-show-count'?: string;
+        'aria-label'?: string;
+      }, HTMLElement>;
+    }
+  }
+}
+

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { Search } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
 
 export default function StudiosPage() {
   const [studios, setStudios] = useState<Studio[]>([]);
@@ -21,6 +22,7 @@ export default function StudiosPage() {
   const [sortBy, setSortBy] = useState('name asc');
   const [isPending, startTransition] = useTransition();
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const { t } = useLanguage();
 
   const loadStudios = useCallback(() => {
     setIsLoading(true);
@@ -108,8 +110,8 @@ export default function StudiosPage() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-1 container mx-auto px-4 sm:px-6 md:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tighter">Studios de développement</h1>
-          <p className="text-lg text-muted-foreground mt-2">Explorez les créateurs derrière vos jeux préférés.</p>
+          <h1 className="text-4xl font-extrabold tracking-tighter">{t('developmentStudiosTitle')}</h1>
+          <p className="text-lg text-muted-foreground mt-2">{t('developmentStudiosSubtitle')}</p>
         </div>
         
         <div className="mb-8 flex flex-col sm:flex-row gap-4 items-end">
@@ -118,7 +120,7 @@ export default function StudiosPage() {
                 <Input
                     id="search-studio"
                     type="search"
-                    placeholder="Rechercher un studio..."
+                    placeholder={t('searchStudio')}
                     className="pl-10 h-12 text-lg"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -127,11 +129,11 @@ export default function StudiosPage() {
             <div className="w-full sm:w-[240px]">
                 <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger id="sort-by-select" className="w-full h-12 text-lg">
-                    <SelectValue placeholder="Trier par" />
+                    <SelectValue placeholder={t('sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="name asc">Nom (A-Z)</SelectItem>
-                    <SelectItem value="name desc">Nom (Z-A)</SelectItem>
+                    <SelectItem value="name asc">{t('nameAZ')}</SelectItem>
+                    <SelectItem value="name desc">{t('nameZA')}</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
@@ -155,8 +157,8 @@ export default function StudiosPage() {
 
         {!isLoading && studios.length === 0 && (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-semibold mb-2">Aucun studio trouvé</h2>
-                <p className="text-muted-foreground">Nous n'avons pas pu charger les studios. Réessayez plus tard.</p>
+                <h2 className="text-2xl font-semibold mb-2">{t('noStudiosFound')}</h2>
+                <p className="text-muted-foreground">{t('tryAdjusting')}</p>
             </div>
         )}
       </main>
@@ -165,7 +167,7 @@ export default function StudiosPage() {
         <div className="py-6 px-4 sm:px-6 md:px-8 border-t">
           <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Studios par page:</span>
+              <span>{t('studiosPerPage')}</span>
               <Select value={String(itemsPerPage)} onValueChange={(value) => setItemsPerPage(Number(value))}>
                 <SelectTrigger className="w-[80px]">
                   <SelectValue />
@@ -189,7 +191,7 @@ export default function StudiosPage() {
               </PaginationContent>
             </Pagination>
             <div className="text-sm text-muted-foreground">
-              Page {currentPage} sur {totalPages} ({totalItems} studios)
+              {t('page')} {currentPage} {t('of')} {totalPages} ({totalItems} {t('studiosCount')})
             </div>
           </div>
         </div>

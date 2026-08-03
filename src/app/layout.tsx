@@ -2,11 +2,14 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 import { FirebaseProvider } from '@/context/firebase-context';
+import { LanguageProvider } from '@/context/language-context';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'GameNexus',
-  description: 'Recherchez et découvrez vos jeux préférés.',
+  description: 'Search and discover your favorite games.',
 };
 
 export default function RootLayout({
@@ -15,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -23,17 +26,16 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background flex flex-col" suppressHydrationWarning>
         <FirebaseProvider>
-          <Header />
-          <div className="flex-1">
-            {children}
-          </div>
-          <Toaster />
-          <footer className="py-4 px-4 sm:px-6 md:px-8 border-t mt-auto">
-              <div className="container mx-auto text-center text-sm text-muted-foreground">
-                  Copyright©️2026 GameNexus est un service GEEK FACTORY (geek-factory.xyz), Tous droits réservés. Merci à IGDB pour l'API :) (Version 2.0 Stable)
-              </div>
-          </footer>
+          <LanguageProvider>
+            <Header />
+            <div className="flex-1">
+              {children}
+            </div>
+            <Toaster />
+            <Footer />
+          </LanguageProvider>
         </FirebaseProvider>
+        <Script async defer src="https://buttons.github.io/buttons.js" />
       </body>
     </html>
   );
