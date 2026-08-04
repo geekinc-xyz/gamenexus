@@ -5,7 +5,6 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { FirebaseProvider } from '@/context/firebase-context';
 import { LanguageProvider } from '@/context/language-context';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'GameNexus',
@@ -35,7 +34,6 @@ export default function RootLayout({
             <Footer />
           </LanguageProvider>
         </FirebaseProvider>
-        <Script async defer src="https://buttons.github.io/buttons.js" />
       </body>
     </html>
   );

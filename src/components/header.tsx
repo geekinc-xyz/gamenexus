@@ -1,15 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import { Gamepad, Compass, Globe } from 'lucide-react';
+import { Gamepad, Compass, Globe, Sun, Moon, Github } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/language-context';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 
 export function Header() {
   const pathname = usePathname();
   const { lang, setLang, t } = useLanguage();
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    setIsDark(isDarkMode);
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDark(false);
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDark(true);
+    }
+  };
 
   const navItems = [
     { href: '/games', label: t('browse'), icon: Compass },
@@ -26,15 +45,24 @@ export function Header() {
             <Gamepad className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground tracking-tight">GameNexus</h1>
           </Link>
-          <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              className="h-9 w-9 px-0"
+              title="Toggle Theme"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}
-              className="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold"
+              className="flex items-center gap-1 h-9 px-2.5 text-xs font-semibold"
             >
               <Globe className="h-3.5 w-3.5" />
-              {lang === 'en' ? 'EN / FR' : 'FR / EN'}
+              {lang === 'en' ? 'FR' : 'EN'}
             </Button>
           </div>
         </div>
@@ -58,22 +86,37 @@ export function Header() {
           })}
         </nav>
 
-        <div className="flex items-center gap-4 flex-wrap justify-center">
-          <div className="hidden md:flex items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}
-              className="flex items-center gap-1.5 h-9 px-3 text-xs font-semibold"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {lang === 'en' ? 'EN (Switch to FR)' : 'FR (Switch to EN)'}
-            </Button>
-          </div>
+        <div className="flex items-center gap-3 flex-wrap justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleTheme}
+            className="hidden md:flex items-center gap-1.5 h-9 px-3 text-xs font-semibold"
+            title="Toggle Theme"
+          >
+            {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-700" />}
+            <span>{isDark ? 'Light' : 'Dark'}</span>
+          </Button>
 
-          <div className="flex items-center pt-1">
-            <github-button repo="geekinc-xyz/gamenexus" data-show-count="true" data-size="large" aria-label="Star geekinc-xyz/gamenexus on GitHub">Star</github-button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}
+            className="hidden md:flex items-center gap-1.5 h-9 px-3 text-xs font-semibold"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            <span>{lang === 'en' ? 'FR' : 'EN'}</span>
+          </Button>
+
+          <a
+            href="https://github.com/geekinc-xyz/gamenexus"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground text-xs font-medium transition-colors"
+          >
+            <Github className="h-4 w-4" />
+            <span>GitHub</span>
+          </a>
         </div>
       </div>
     </header>
