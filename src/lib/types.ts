@@ -2,12 +2,7 @@
 
 
 
-export type PlatformName = 
-  | 'PC'
-  | 'PlayStation'
-  | 'Xbox'
-  | 'Nintendo Switch'
-  | 'macOS';
+export type PlatformName = string;
 
 export type Platform = {
   id: number;

@@ -2,7 +2,7 @@ import type { LucideProps } from 'lucide-react';
 import { Gamepad2, PcCase, Apple, Smartphone } from 'lucide-react';
 import type { PlatformName } from '@/lib/types';
 
-export const platformIcons: { [key in PlatformName]: React.ElementType<LucideProps> } = {
+export const platformIcons: Record<string, React.ElementType<LucideProps>> = {
   'PC': PcCase,
   'PlayStation': Gamepad2,
   'Xbox': Gamepad2,

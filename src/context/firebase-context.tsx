@@ -14,16 +14,26 @@ const firebaseConfig = {
 };
 
 interface FirebaseContextType {
-    app: FirebaseApp;
-    auth: Auth;
-    db: Firestore;
+    app: FirebaseApp | null;
+    auth: Auth | null;
+    db: Firestore | null;
 }
 
 const FirebaseContext = createContext<FirebaseContextType | null>(null);
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'undefined') {
+    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  }
+} catch (e) {
+  console.warn('Firebase initialization skipped or failed:', e);
+}
 
 export function FirebaseProvider({ children }: { children: ReactNode }) {
     return (
@@ -35,8 +45,5 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
 
 export const useFirebase = () => {
     const context = useContext(FirebaseContext);
-    if (!context) {
-        throw new Error('useFirebase must be used within a FirebaseProvider');
-    }
-    return context;
+    return context || { app: null, auth: null, db: null };
 };

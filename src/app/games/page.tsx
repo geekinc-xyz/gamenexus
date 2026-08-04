@@ -6,14 +6,9 @@ import { getGames, getPlatforms } from '@/lib/igdb-api';
 import type { Game, Platform } from '@/lib/types';
 import { useDebounce } from '@/hooks/use-debounce';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import dynamic from 'next/dynamic';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GameFilters } from '@/components/game-filters';
 import { useLanguage } from '@/context/language-context';
-
-const GameFilters = dynamic(() => import('@/components/game-filters').then(mod => mod.GameFilters), {
-  ssr: false,
-  loading: () => <div className="h-[88px] w-full" suppressHydrationWarning></div>
-});
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 function GamesPageContent() {
   const [games, setGames] = useState<Game[]>([]);

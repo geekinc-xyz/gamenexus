@@ -149,19 +149,33 @@ type GetGamesOptions = {
 
 export async function getGames({ search = '', platform, page = 1, limit = 100, sortBy = 'total_rating_count desc' }: GetGamesOptions = {}): Promise<{ games: Game[], totalCount: number }> {
   let whereClauses = [
-    'total_rating > 0',
-    'total_rating_count > 0',
     'version_parent = null',
     'parent_game = null',
-    'first_release_date != null',
   ];
+
+  if (platform !== '372') {
+    whereClauses.push('first_release_date != null');
+  }
+
+  if ((!platform || platform === 'all') && !search) {
+    whereClauses.push('total_rating > 0');
+    whereClauses.push('total_rating_count > 0');
+  }
 
   if (search) {
     whereClauses.push(`name ~ *"${search}"*`);
   }
 
-  if (platform) {
-    whereClauses.push(`platforms.name = "${platform}"`);
+  if (platform && platform !== 'all') {
+    if (platform === '34') {
+      whereClauses.push(`(platforms = 34 | platforms = 39 | platforms = 55)`);
+    } else if (platform === '169') {
+      whereClauses.push(`(platforms = 169 | name ~ *"Series X"* | name ~ *"Series S"* | name ~ *"Xbox Series"*)`);
+    } else if (platform === '372') {
+      whereClauses.push(`(platforms = 130 & (name ~ *"Switch 2"* | name ~ *"Switch II"* | name ~ *"Nintendo Switch 2"*)) | name ~ *"Switch 2"* | name ~ *"Switch II"*`);
+    } else {
+      whereClauses.push(`platforms = ${platform}`);
+    }
   }
 
   const whereString = whereClauses.join(' & ');
@@ -214,40 +228,27 @@ export async function getGameDetails(id: number): Promise<Game | null> {
 }
 
 export async function getPlatforms(): Promise<Platform[]> {
-    const popularPlatformIds = [6, 48, 49, 130];
-    const query = `
-        fields name;
-        where id = (${popularPlatformIds.join(',')});
-        limit 10;
-    `;
-    const platforms = await fetchFromIGDB('platforms', query);
-
-    const platformMap = new Map<string, Platform>();
-
-    if(platforms && platforms.length > 0) {
-        platforms.forEach((p: any) => {
-            let name = p.name;
-            if (name.includes('PlayStation')) name = 'PlayStation';
-            if (name.includes('Xbox')) name = 'Xbox';
-            if (name.includes('PC')) name = 'PC';
-            if (name.includes('Nintendo Switch')) name = 'Nintendo Switch';
-
-            if(!platformMap.has(name)) {
-                platformMap.set(name, { id: p.id, name });
-            }
-        });
-    }
-
-    if (platformMap.size === 0) {
-        return [
-            { id: 6, name: 'PC' },
-            { id: 48, name: 'PlayStation' },
-            { id: 49, name: 'Xbox' },
-            { id: 130, name: 'Nintendo Switch' }
-        ];
-    }
-
-    return Array.from(platformMap.values());
+    return [
+        { id: 6, name: 'PC' },
+        { id: 7, name: 'PS1' },
+        { id: 8, name: 'PS2' },
+        { id: 9, name: 'PS3' },
+        { id: 48, name: 'PS4' },
+        { id: 167, name: 'PS5' },
+        { id: 11, name: 'Xbox' },
+        { id: 12, name: 'Xbox 360' },
+        { id: 49, name: 'Xbox One' },
+        { id: 169, name: 'Xbox Series X/S' },
+        { id: 18, name: 'NES' },
+        { id: 19, name: 'SNES' },
+        { id: 4, name: 'N64' },
+        { id: 21, name: 'GameCube' },
+        { id: 5, name: 'Wii' },
+        { id: 41, name: 'Wii U' },
+        { id: 130, name: 'Nintendo Switch' },
+        { id: 372, name: 'Nintendo Switch 2' },
+        { id: 34, name: 'Mobile' },
+    ];
 }
 
 type GetFranchisesOptions = {

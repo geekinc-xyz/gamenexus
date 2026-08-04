@@ -51,7 +51,7 @@ export function GameFilters({
               <SelectContent>
                 <SelectItem value="all">{t('allPlatforms')}</SelectItem>
                 {platforms.map(platform => (
-                  <SelectItem key={platform.id} value={platform.name}>
+                  <SelectItem key={platform.id} value={String(platform.id)}>
                     {platform.name}
                   </SelectItem>
                 ))}
