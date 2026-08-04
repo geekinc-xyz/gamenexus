@@ -1,38 +1,58 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { getGameDetails } from '@/lib/igdb-api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlatformIcon } from '@/components/icons';
 import { ArrowLeft, Star, CalendarDays, Tag, Users, Puzzle, Code, Building, Palette, Film } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
+import { useEffect, useState } from 'react';
+import type { Game } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
+export default function GameDetailPage() {
+  const params = useParams();
+  const gameId = parseInt(params.id as string, 10);
+  const [game, setGame] = useState<Game | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { t, lang } = useLanguage();
 
-type GameDetailPageProps = {
-  params: { id: string };
-};
+  useEffect(() => {
+    async function load() {
+      if (isNaN(gameId)) {
+        notFound();
+        return;
+      }
+      setLoading(true);
+      try {
+        const details = await getGameDetails(gameId);
+        if (!details) {
+          notFound();
+          return;
+        }
+        setGame(details);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [gameId]);
 
-const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | React.ReactNode }) => (
-  <div>
-    <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
-      <Icon className="mr-2 h-4 w-4" />
-      {label}
-    </h3>
-    <div className="text-lg">{value || 'N/A'}</div>
-  </div>
-);
-
-export default async function GameDetailPage({ params }: GameDetailPageProps) {
-  const gameId = parseInt(params.id, 10);
-  const game = await getGameDetails(gameId);
+  if (loading) {
+    return <div className="min-h-[60vh] flex items-center justify-center">Loading...</div>;
+  }
 
   if (!game) {
     notFound();
+    return null;
   }
 
   const releaseDate = game.releaseDate 
-    ? new Date(game.releaseDate * 1000).toLocaleDateString('fr-FR', {
+    ? new Date(game.releaseDate * 1000).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -52,7 +72,7 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
         {game.screenshots && game.screenshots.length > 0 ? (
           <Image
             src={game.screenshots[0].url}
-            alt={`Capture d'écran de ${game.name}`}
+            alt={`Screenshot of ${game.name}`}
             fill
             className="object-cover"
             priority
@@ -64,9 +84,9 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
         <div className="absolute top-4 left-4">
           <Button asChild variant="secondary" size="sm">
-            <Link href="/">
+            <Link href="/games">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour aux jeux
+              {t('backToGames')}
             </Link>
           </Button>
         </div>
@@ -85,9 +105,27 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
               />
             </div>
             <div className="mt-6 space-y-4">
-              <DetailItem icon={CalendarDays} label="Date de sortie" value={releaseDate} />
-              <DetailItem icon={Code} label="Développeurs" value={renderList(game.developers)} />
-              <DetailItem icon={Building} label="Éditeurs" value={renderList(game.publishers)} />
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <CalendarDays className="mr-2 h-4 w-4" />
+                  {t('releaseDate')}
+                </h3>
+                <div className="text-lg">{releaseDate}</div>
+              </div>
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Code className="mr-2 h-4 w-4" />
+                  {t('developers')}
+                </h3>
+                <div className="text-lg">{renderList(game.developers)}</div>
+              </div>
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Building className="mr-2 h-4 w-4" />
+                  {t('publishers')}
+                </h3>
+                <div className="text-lg">{renderList(game.publishers)}</div>
+              </div>
             </div>
           </aside>
 
@@ -110,23 +148,47 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
             </div>
 
             <p className="text-lg text-muted-foreground mb-8 max-w-3xl">
-              {game.description || "Aucune description disponible."}
+              {game.description || t('noDescription')}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-              <DetailItem icon={Tag} label="Genres" value={renderList(game.genres)} />
-              <DetailItem icon={Users} label="Franchise" value={renderList(game.franchises)} />
-              <DetailItem icon={Puzzle} label="Modes de jeu" value={renderList(game.gameModes)} />
-              <DetailItem icon={Palette} label="Thèmes" value={renderList(game.themes)} />
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Tag className="mr-2 h-4 w-4" />
+                  {t('genres')}
+                </h3>
+                <div className="text-lg">{renderList(game.genres)}</div>
+              </div>
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Users className="mr-2 h-4 w-4" />
+                  {t('franchise')}
+                </h3>
+                <div className="text-lg">{renderList(game.franchises)}</div>
+              </div>
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Puzzle className="mr-2 h-4 w-4" />
+                  {t('gameModes')}
+                </h3>
+                <div className="text-lg">{renderList(game.gameModes)}</div>
+              </div>
+              <div>
+                <h3 className="flex items-center text-md font-semibold text-muted-foreground mb-1">
+                  <Palette className="mr-2 h-4 w-4" />
+                  {t('themes')}
+                </h3>
+                <div className="text-lg">{renderList(game.themes)}</div>
+              </div>
             </div>
 
             {firstTrailer && (
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 flex items-center"><Film className="mr-2 h-6 w-6" /> Bande-annonce</h2>
+                <h2 className="text-2xl font-bold mb-4 flex items-center"><Film className="mr-2 h-6 w-6" /> {t('trailer')}</h2>
                 <div className="aspect-video relative rounded-lg overflow-hidden border">
                   <iframe
                     src={`https://www.youtube.com/embed/${firstTrailer.video_id}`}
-                    title={`Bande-annonce de ${game.name}`}
+                    title={`Trailer for ${game.name}`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -137,17 +199,17 @@ export default async function GameDetailPage({ params }: GameDetailPageProps) {
             )}
 
             <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Captures d'écran</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('screenshots')}</h2>
                 {game.screenshots && game.screenshots.length > 0 ? (
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                       {game.screenshots.map((ss) => (
                           <div key={ss.id} className="aspect-video relative rounded-md overflow-hidden">
-                              <Image src={ss.url} alt={`Capture d'écran`} fill className="object-cover"/>
+                              <Image src={ss.url} alt={`Screenshot`} fill className="object-cover"/>
                           </div>
                       ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground">Aucune capture d'écran disponible.</p>
+                  <p className="text-muted-foreground">{t('noScreenshots')}</p>
                 )}
             </div>
           </div>

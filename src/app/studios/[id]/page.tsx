@@ -1,22 +1,44 @@
+'use client';
 
 import { getStudioDetails } from '@/lib/igdb-api';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { GameCard } from '@/components/game-card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft, ServerCrash } from 'lucide-react';
 import type { Studio } from '@/lib/types';
+import { useLanguage } from '@/context/language-context';
+import { useEffect, useState } from 'react';
 
-export const dynamic = 'force-dynamic';
+export default function StudioDetailPage() {
+  const params = useParams();
+  const studioId = parseInt(params.id as string, 10);
+  const [studio, setStudio] = useState<Studio | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
-export default async function StudioDetailPage({ params }: { params: { id: string } }) {
-  const studioId = parseInt(params.id, 10);
-  
-  if (isNaN(studioId)) {
-      notFound();
+  useEffect(() => {
+    async function load() {
+      if (isNaN(studioId)) {
+        notFound();
+        return;
+      }
+      setLoading(true);
+      try {
+        const details = await getStudioDetails(studioId);
+        setStudio(details);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [studioId]);
+
+  if (loading) {
+    return <div className="min-h-[60vh] flex items-center justify-center">Loading...</div>;
   }
-
-  const studio: Studio | null = await getStudioDetails(studioId);
 
   if (!studio) {
     return (
@@ -26,14 +48,14 @@ export default async function StudioDetailPage({ params }: { params: { id: strin
               <Button asChild variant="outline" size="sm" className="mb-4">
                   <Link href="/studios">
                       <ArrowLeft className="mr-2 h-4 w-4" />
-                      Retour aux studios
+                      {t('backToStudios')}
                   </Link>
               </Button>
           </div>
           <div className="text-center py-20 bg-muted/50 rounded-lg">
               <ServerCrash className="mx-auto h-12 w-12 text-destructive" />
-              <h2 className="mt-4 text-2xl font-semibold">Erreur de chargement</h2>
-              <p className="mt-2 text-muted-foreground">Impossible de charger les détails du studio. L'API est peut-être indisponible ou les clés d'API ne sont pas configurées.</p>
+              <h2 className="mt-4 text-2xl font-semibold">{t('loadingError')}</h2>
+              <p className="mt-2 text-muted-foreground">{t('apiErrorDesc')}</p>
           </div>
         </main>
       </div>
@@ -47,13 +69,13 @@ export default async function StudioDetailPage({ params }: { params: { id: strin
             <Button asChild variant="outline" size="sm" className="mb-4">
                 <Link href="/studios">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Retour aux studios
+                    {t('backToStudios')}
                 </Link>
             </Button>
             <h1 className="text-4xl font-extrabold tracking-tighter">{studio.name}</h1>
             {studio.developed.length > 0 && (
                  <p className="text-lg text-muted-foreground mt-2">
-                    {studio.developed.length} jeu{studio.developed.length > 1 ? 'x' : ''} développé{studio.developed.length > 1 ? 's' : ''}
+                    {studio.developed.length} {t('developedCount')}
                 </p>
             )}
         </div>
@@ -66,8 +88,8 @@ export default async function StudioDetailPage({ params }: { params: { id: strin
             </div>
         ) : (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-semibold mb-2">Aucun jeu trouvé</h2>
-                <p className="text-muted-foreground">Ce studio n'a aucun jeu répertorié dans notre base de données.</p>
+                <h2 className="text-2xl font-semibold mb-2">{t('noGamesFound')}</h2>
+                <p className="text-muted-foreground">{t('noStudioGames')}</p>
             </div>
         )}
       </main>

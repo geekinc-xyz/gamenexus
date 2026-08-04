@@ -52,7 +52,13 @@ export const translations = {
     newsTitle: 'Video Game News',
     newsSubtitle: 'The latest news, courtesy of IGN.',
     noNewsFound: 'No news found',
-    footerCopyright: 'Copyright©️2026 GameNexus is a GEEK Inc. service (geek-inc.xyz), All rights reserved. Thanks to IGDB for the API :)',
+    footerCopyright: 'Copyright©️2026 GameNexus is a GEEK FACTORY service (geek-factory.xyz), All rights reserved. Thanks to IGDB for the API :) - (Version 2.2 Stable)',
+    backToFranchises: 'Back to franchises',
+    backToStudios: 'Back to studios',
+    loadingError: 'Loading error',
+    apiErrorDesc: 'Unable to load details. The API may be unavailable or API keys are not configured.',
+    developedCount: 'developed games',
+    noStudioGames: 'This studio has no games listed in our database.',
   },
   fr: {
     browse: 'Parcourir',
@@ -105,6 +111,12 @@ export const translations = {
     newsTitle: 'Actualités du Jeu Vidéo',
     newsSubtitle: "Les dernières nouvelles, gracieuseté d'IGN.",
     noNewsFound: 'Aucune actualité trouvée',
-    footerCopyright: 'Copyright©️2026 GameNexus est un service GEEK Inc. (geek-inc.xyz), Tous droits réservés. Merci à IGDB pour l\'API :)',
+    footerCopyright: 'Copyright©️2026 GameNexus est un service GEEK FACTORY (geek-factory.xyz), Tous droits réservés. Merci à IGDB pour l\'API :) - (Version 2.2 Stable)',
+    backToFranchises: 'Retour aux franchises',
+    backToStudios: 'Retour aux studios',
+    loadingError: 'Erreur de chargement',
+    apiErrorDesc: "Impossible de charger les détails. L'API est peut-être indisponible ou les clés d'API ne sont pas configurées.",
+    developedCount: 'développés',
+    noStudioGames: "Ce studio n'a aucun jeu répertorié dans notre base de données.",
   }
 };

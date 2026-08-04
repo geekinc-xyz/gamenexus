@@ -11,12 +11,15 @@ import { ArrowLeft } from 'lucide-react';
 import type { Franchise } from '@/lib/types';
 import Loading from './loading';
 
+import { useLanguage } from '@/context/language-context';
+
 export default function FranchiseDetailPage() {
   const params = useParams();
   const franchiseId = parseInt(params.id as string, 10);
 
   const [franchise, setFranchise] = useState<Franchise | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   const fetchDetails = useCallback(async () => {
     if (isNaN(franchiseId)) {
@@ -68,7 +71,7 @@ export default function FranchiseDetailPage() {
         <Button asChild variant="secondary" size="sm">
             <Link href="/franchises">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour aux franchises
+            {t('backToFranchises')}
             </Link>
         </Button>
         </div>
@@ -82,7 +85,7 @@ export default function FranchiseDetailPage() {
     </div>
 
     <main className="container mx-auto px-4 sm:px-6 md:px-8 py-8">
-        <h2 className="text-3xl font-bold tracking-tight mb-6">Jeux de la saga ({franchise.games.length})</h2>
+        <h2 className="text-3xl font-bold tracking-tight mb-6">{t('sagaGames')} ({franchise.games.length})</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {franchise.games.map(game => (
             <GameCard key={game.id} game={game} />
