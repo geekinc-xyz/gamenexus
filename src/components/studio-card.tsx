@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Studio } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { Building } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
 
 interface StudioCardProps {
   studio: Studio;
@@ -13,6 +14,7 @@ interface StudioCardProps {
 
 export function StudioCard({ studio }: StudioCardProps) {
   const hasLogo = studio.logoUrl && !studio.logoUrl.endsWith('placeholder.jpg');
+  const { t } = useLanguage();
   
   return (
     <Link href={`/studios/${studio.id}`} className="group block h-full">
@@ -35,7 +37,9 @@ export function StudioCard({ studio }: StudioCardProps) {
         </div>
         <CardContent className="p-0 flex flex-col items-center justify-center">
             <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">{studio.name}</h3>
-            <Badge variant="secondary" className="mt-2">{studio.developed.length} Jeux</Badge>
+            <Badge variant="secondary" className="mt-2">
+              {studio.developed.length} {studio.developed.length === 1 ? t('game') : t('games')}
+            </Badge>
         </CardContent>
       </Card>
     </Link>

@@ -5,12 +5,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Franchise } from '@/lib/types';
 import { Badge } from './ui/badge';
+import { useLanguage } from '@/context/language-context';
 
 interface FranchiseCardProps {
   franchise: Franchise;
 }
 
 export function FranchiseCard({ franchise }: FranchiseCardProps) {
+  const { t } = useLanguage();
   return (
     <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 group/card flex flex-col">
       <div className="aspect-[4/3] relative">
@@ -33,7 +35,9 @@ export function FranchiseCard({ franchise }: FranchiseCardProps) {
             </Link>
           </div>
           <div className="mt-2">
-              <Badge variant="secondary">{franchise.games.length} Jeux</Badge>
+              <Badge variant="secondary">
+                {franchise.games.length} {franchise.games.length === 1 ? t('game') : t('games')}
+              </Badge>
           </div>
       </CardContent>
     </Card>
