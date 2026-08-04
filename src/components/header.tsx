@@ -39,7 +39,7 @@ export function Header() {
           </div>
         </div>
 
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="flex items-center gap-6 overflow-x-auto py-1 max-w-full">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -47,7 +47,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'text-md font-medium transition-colors hover:text-primary flex items-center gap-1.5',
+                  'text-sm sm:text-md font-medium transition-colors hover:text-primary flex items-center gap-1.5 whitespace-nowrap',
                   pathname === item.href ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
@@ -59,25 +59,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4 flex-wrap justify-center">
-          <div className="hidden lg:flex items-center gap-3 overflow-x-auto py-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary flex items-center gap-1 px-2 py-1 rounded-md whitespace-nowrap',
-                    pathname === item.href ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
-                  )}
-                >
-                  {Icon && <Icon className="h-3.5 w-3.5" />}
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
           <div className="hidden md:flex items-center">
             <Button
               variant="outline"
@@ -98,3 +79,4 @@ export function Header() {
     </header>
   );
 }
+
